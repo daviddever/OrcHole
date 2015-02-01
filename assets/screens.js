@@ -24,7 +24,7 @@ Game.Screen.playScreen = {
     enter: function() { console.log("Entered play screen."); },
     exit: function() { console.log("Exited play screen."); },
     render: function(display) {
-        display.drawText(3, 5, "%c(red)%b(white)Orcs are in the hole!");
+        display.drawText(3, 5, "%c{red}%b{white}Orcs are in the hole!");
         display.drawText(4, 6, "Press [Enter] to clean out the Orcs or [Esc] to leave them alone");
     },
     handleInput: function(inputType, inputData) {
