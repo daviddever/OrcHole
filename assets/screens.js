@@ -21,11 +21,48 @@ Game.Screen.startScreen = {
 
 // Define play screen
 Game.Screen.playScreen = {
-    enter: function() { console.log("Entered play screen."); },
+    enter: function() {
+        var map = [];
+        for (var x = 0; x < 80; x++) {
+            // Create the nested array for the y values
+            map.push([]);
+            // Add all the tiles
+            for (var y = 0; y < 24; y++) {
+                map[x].push(Game.Tile.nullTile);
+            }
+        }
+        // Setup the map generator
+        var generator = new ROT.Map.Cellular(80, 24);
+        generator.randomize(0.5);
+        var totalIterations = 3;
+        // Iteratively smoothen the map
+        for (var i = 0; i < totalIterations -1; i++) {
+            generator.create();
+        }
+        // Smoothen last time and then update map
+        generator.create(function(x, y, v) {
+            if (v === 1) {
+                map[x][y] = Game.Tile.floorTile;
+            } else {
+                map[x][y] = Game.Tile.wallTile;
+            }
+        });
+        //Create map from the tiles
+        this._map = new Game.Map(map);
+    },
     exit: function() { console.log("Exited play screen."); },
     render: function(display) {
-        display.drawText(3, 5, "%c{red}%b{white}Orcs are in the hole!");
-        display.drawText(4, 6, "Press [Enter] to clean out the Orcs or [Esc] to leave them alone");
+    // Iterate through all map cells
+        for (var x = 0; x < this._map.getWidth(); x++) {
+            for (var y = 0; y < this._map.getHeight(); y ++) {
+                // Get the glyph for this tile and render it to the screen
+                var glyph = this._map.getTile(x, y).getGlyph();
+                display.draw(x, y,
+                    glyph.getChar(),
+                    glyph.getForeground(),
+                    glyph.getBackground());
+            }
+        }
     },
     handleInput: function(inputType, inputData) {
         if (inputType === 'keydown') {
