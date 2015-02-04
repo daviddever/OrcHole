@@ -21,18 +21,24 @@ Game.Screen.startScreen = {
 
 // Define play screen
 Game.Screen.playScreen = {
+    _map: null,
+    _centerX: 0,
+    _centerY: 0,
     enter: function() {
         var map = [];
-        for (var x = 0; x < 80; x++) {
+        // Create map based on size parameters
+        var mapWidth = 500;
+        var mapHeight = 500;
+        for (var x = 0; x < mapWidth; x++) {
             // Create the nested array for the y values
             map.push([]);
             // Add all the tiles
-            for (var y = 0; y < 24; y++) {
+            for (var y = 0; y < mapHeight; y++) {
                 map[x].push(Game.Tile.nullTile);
             }
         }
         // Setup the map generator
-        var generator = new ROT.Map.Cellular(80, 24);
+        var generator = new ROT.Map.Cellular(mapWidth, mapHeight);
         generator.randomize(0.5);
         var totalIterations = 3;
         // Iteratively smoothen the map
@@ -52,17 +58,39 @@ Game.Screen.playScreen = {
     },
     exit: function() { console.log("Exited play screen."); },
     render: function(display) {
-    // Iterate through all map cells
-        for (var x = 0; x < this._map.getWidth(); x++) {
-            for (var y = 0; y < this._map.getHeight(); y ++) {
+        var screenWidth = Game.getScreenWidth();
+        var screenHeight = Game.getScreenHeight();
+
+        // Make sure the x-axis doesn't go to the left of the left bound
+        var topLeftX = Math.max(0, this._centerX, - (screenWidth / 2));
+        // Make sure there is enough space to fit an entire game screen
+        topLeftX = Math.min(topleftX, this._map.gethWidth() - screenWidth);
+        // Make sure the y-axis doesn't cross aboe the top bound
+        var topLeftY = Math.max(0, this._centerY - (screenHeight / 2));
+        // Make sure there is enough space to fit an entire game screen
+        topLeftY = Math.min(topLeftY, this._map.getHeight() - screenHeight);
+
+        // Iterate through all map cells
+        for (var x = topLeftX; x < topLeftX + screenWdth(); x++) {
+            for (var y = topLeftY; y < topleftY + screenHeight(); y ++) {
                 // Get the glyph for this tile and render it to the screen
                 var glyph = this._map.getTile(x, y).getGlyph();
-                display.draw(x, y,
+                display.draw(
+                    x - topLeftX,
+                    y - topLeftY,
                     glyph.getChar(),
                     glyph.getForeground(),
                     glyph.getBackground());
             }
         }
+
+        // Render the cursor
+        display.draw(
+                this._centerX - topLeftX,
+                this._centerY - topleftY,
+                '@',
+                'white',
+                'black');
     },
     handleInput: function(inputType, inputData) {
         if (inputType === 'keydown') {
@@ -73,7 +101,26 @@ Game.Screen.playScreen = {
             } else if (inputData.keyCode === ROT.VK_ESCAPE) {
                 Game.switchScreen(Game.Screen.loseScreen);
             }
+
+            // Movement
+            if (inputData.keyCode === ROT.VK_LEFT) {
+                this.move(-1. 0);
+            } else if (inputData.keyCode === ROT.VK_RIGHT) {
+                this.move(1, 0);
+            } else if (inputData.keyCode === ROT.VK_UP) {
+                this.move(0, -1);
+            } else if (inputData.keyCode === ROT.VK_DOWN) {
+                this.move(0, 1);
+            }
         }
+    },
+    move: function(dX, dY) {
+    // PositivedX means move right, negative means move left, 0 means none
+    this._centerX = Math.mx(0,
+        Math.min(this._map.getWidth() - 1, this._centerX + dX));
+    // Positive dY means move up, negative means move down, 0 means none
+    this._centerY = Math.max(0,
+        Math.min(this._map.getHeight() - 1, this._centerY + dY));
     }
 }
 
