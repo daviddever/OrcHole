@@ -64,15 +64,15 @@ Game.Screen.playScreen = {
         // Make sure the x-axis doesn't go to the left of the left bound
         var topLeftX = Math.max(0, this._centerX, - (screenWidth / 2));
         // Make sure there is enough space to fit an entire game screen
-        topLeftX = Math.min(topleftX, this._map.gethWidth() - screenWidth);
+        topLeftX = Math.min(topLeftX, this._map.getWidth() - screenWidth);
         // Make sure the y-axis doesn't cross aboe the top bound
         var topLeftY = Math.max(0, this._centerY - (screenHeight / 2));
         // Make sure there is enough space to fit an entire game screen
         topLeftY = Math.min(topLeftY, this._map.getHeight() - screenHeight);
 
         // Iterate through all map cells
-        for (var x = topLeftX; x < topLeftX + screenWdth(); x++) {
-            for (var y = topLeftY; y < topleftY + screenHeight(); y ++) {
+        for (var x = topLeftX; x < topLeftX + screenWidth; x++) {
+            for (var y = topLeftY; y < topLeftY + screenHeight; y ++) {
                 // Get the glyph for this tile and render it to the screen
                 var glyph = this._map.getTile(x, y).getGlyph();
                 display.draw(
@@ -87,7 +87,7 @@ Game.Screen.playScreen = {
         // Render the cursor
         display.draw(
                 this._centerX - topLeftX,
-                this._centerY - topleftY,
+                this._centerY - topLeftY,
                 '@',
                 'white',
                 'black');
@@ -104,7 +104,7 @@ Game.Screen.playScreen = {
 
             // Movement
             if (inputData.keyCode === ROT.VK_LEFT) {
-                this.move(-1. 0);
+                this.move(-1, 0);
             } else if (inputData.keyCode === ROT.VK_RIGHT) {
                 this.move(1, 0);
             } else if (inputData.keyCode === ROT.VK_UP) {
@@ -116,7 +116,7 @@ Game.Screen.playScreen = {
     },
     move: function(dX, dY) {
     // PositivedX means move right, negative means move left, 0 means none
-    this._centerX = Math.mx(0,
+    this._centerX = Math.max(0,
         Math.min(this._map.getWidth() - 1, this._centerX + dX));
     // Positive dY means move up, negative means move down, 0 means none
     this._centerY = Math.max(0,
