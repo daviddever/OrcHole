@@ -22,8 +22,7 @@ Game.Screen.startScreen = {
 // Define play screen
 Game.Screen.playScreen = {
     _map: null,
-    _centerX: 0,
-    _centerY: 0,
+    _player: null,
     enter: function() {
         var map = [];
         // Create map based on size parameters
@@ -55,6 +54,11 @@ Game.Screen.playScreen = {
         });
         //Create map from the tiles
         this._map = new Game.Map(map);
+        // Create player and set the position
+        this._player = new Game.Entity(Game.PlayerTemplate);
+        var position = this._map.getRandomFloorPosition();
+        this._player.setX(position.x);
+        this._player.setY(position.y);
     },
     exit: function() { console.log("Exited play screen."); },
     render: function(display) {
@@ -62,11 +66,11 @@ Game.Screen.playScreen = {
         var screenHeight = Game.getScreenHeight();
 
         // Make sure the x-axis doesn't go to the left of the left bound
-        var topLeftX = Math.max(0, this._centerX, - (screenWidth / 2));
+        var topLeftX = Math.max(0, this._player.getX() - (screenWidth / 2));
         // Make sure there is enough space to fit an entire game screen
         topLeftX = Math.min(topLeftX, this._map.getWidth() - screenWidth);
         // Make sure the y-axis doesn't cross aboe the top bound
-        var topLeftY = Math.max(0, this._centerY - (screenHeight / 2));
+        var topLeftY = Math.max(0, this._player.getY() - (screenHeight / 2));
         // Make sure there is enough space to fit an entire game screen
         topLeftY = Math.min(topLeftY, this._map.getHeight() - screenHeight);
 
@@ -74,23 +78,24 @@ Game.Screen.playScreen = {
         for (var x = topLeftX; x < topLeftX + screenWidth; x++) {
             for (var y = topLeftY; y < topLeftY + screenHeight; y ++) {
                 // Get the glyph for this tile and render it to the screen
-                var glyph = this._map.getTile(x, y).getGlyph();
+                var tile = this._map.getTile(x, y);
                 display.draw(
                     x - topLeftX,
                     y - topLeftY,
-                    glyph.getChar(),
-                    glyph.getForeground(),
-                    glyph.getBackground());
+                    tile.getChar(),
+                    tile.getForeground(),
+                    tile.getBackground());
             }
         }
 
-        // Render the cursor
+        // Render the player
         display.draw(
-                this._centerX - topLeftX,
-                this._centerY - topLeftY,
-                '@',
-                'white',
-                'black');
+                this._player.getX() - topLeftX,
+                this._player.getY() - topLeftY,
+                this._player.getChar(),
+                this._player.getForeground(),
+                this._player.getBackground()
+        );
     },
     handleInput: function(inputType, inputData) {
         if (inputType === 'keydown') {
@@ -115,12 +120,10 @@ Game.Screen.playScreen = {
         }
     },
     move: function(dX, dY) {
-    // PositivedX means move right, negative means move left, 0 means none
-    this._centerX = Math.max(0,
-        Math.min(this._map.getWidth() - 1, this._centerX + dX));
-    // Positive dY means move up, negative means move down, 0 means none
-    this._centerY = Math.max(0,
-        Math.min(this._map.getHeight() - 1, this._centerY + dY));
+        var newX = this._player.getX() + dX;
+        var newY = this._player.getY() + dY;
+        // Try to move to the new cell
+        this._player.tryMove(newX, newY, this._map);
     }
 }
 
