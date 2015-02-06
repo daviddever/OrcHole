@@ -27,7 +27,7 @@ Game.Entity = function(properties) {
         this._attachedMixins[mixins[i].name] = true;
         // If a group name is present, add it
         if (mixins[i].groupName) {
-            this.attachedMixinGroups[mixins[i].groupName] = true;
+            this._attachedMixinGroups[mixins[i].groupName] = true;
         }
         // Call the init function if there is one
         if (mixins[i].init) {
@@ -36,17 +36,17 @@ Game.Entity = function(properties) {
     }
 };
 
+// Make entities inherit all the functionality from glyphs
+Game.Entity.extend(Game.Glyph);
+
 Game.Entity.prototype.hasMixin = function(obj) {
     // Allow passing the mixin itself or the name or group as a string
     if (typeof obj === 'object') {
         return this._attachedMixins[obj.name];
     } else {
-        return this._attachedMixins[obj] || this._attachedMixinGroups[obj];;
+        return this._attachedMixins[obj] || this._attachedMixinGroups[obj];
     }
 }
-
-// Make entities inherit all the functionality from glyphs
-Game.Entity.extend(Game.Glyph);
 
 Game.Entity.prototype.setName = function(name) {
     this._name = name;
