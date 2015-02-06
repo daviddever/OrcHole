@@ -34,9 +34,16 @@ Game.Mixins.PlayerActor = {
         Game.refresh();
         // Lock the engine and wait asynchronously for the player
         // to press a key
-        this.getMap().getEngine.lock();
+        this.getMap().getEngine().lock();
     }
 }
+
+Game.Mixins.FungusActor = {
+    name: 'FungusActor',
+    groupName: 'Actor',
+    act: function() { }
+}
+
 
 // Player template
 Game.PlayerTemplate = {
@@ -47,12 +54,7 @@ Game.PlayerTemplate = {
 }
 
 
-Game.FungusActor = {
-    name: 'FungusActor',
-    groupName: 'Actor',
-    act: function() { }
-}
-
+// Fungus template
 Game.FungusTemplate = {
     character: '#',
     foreground: 'green',
