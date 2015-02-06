@@ -25,14 +25,6 @@ Game.Mixins.Moveable = {
     }
 }
 
-// Player template
-Game.PlayerTemplate = {
-    character: '@',
-    foreground: 'white',
-    background: 'black',
-    mixins: [Game.Mixins.Moveable, Game.Mixins.PlayerActor]
-}
-
 // Main player's actor mixin
 Game.Mixins.PlayerActor = {
     name: 'PlayerActor',
@@ -45,6 +37,15 @@ Game.Mixins.PlayerActor = {
         this.getMap().getEngine.lock();
     }
 }
+
+// Player template
+Game.PlayerTemplate = {
+    character: '@',
+    foreground: 'white',
+    background: 'black',
+    mixins: [Game.Mixins.Moveable, Game.Mixins.PlayerActor]
+}
+
 
 Game.FungusActor = {
     name: 'FungusActor',

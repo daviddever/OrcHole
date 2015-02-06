@@ -11,7 +11,7 @@ Game.Entity = function(properties) {
     // based on the name of the property
     this._attachedMixins = {};
     // Create a similar object for groups
-    this._attchedMixinGroups = {};
+    this._attachedMixinGroups = {};
     // Setup the object's mixins
     var mixins = properties['mixins'] || [];
     for (var i = 0; i < mixins.length; i++) {
