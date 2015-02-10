@@ -60,6 +60,10 @@ Game.Entity.prototype.setY = function(y) {
     this._y = y;
 }
 
+Game.Entity.prototype.setMap = function(map) {
+    this._map = map;
+}
+
 Game.Entity.prototype.getName = function() {
     return this._name;
 }
@@ -70,10 +74,6 @@ Game.Entity.prototype.getX = function() {
 
 Game.Entity.prototype.getY = function() {
     return this._y;
-}
-
-Game.Entity.prototype.setMap = function(map) {
-    this._map = map;
 }
 
 Game.Entity.prototype.getMap = function(map) {
