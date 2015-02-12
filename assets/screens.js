@@ -26,8 +26,8 @@ Game.Screen.playScreen = {
     enter: function() {
         var map = [];
         // Create map based on size parameters
-        var mapWidth = 500;
-        var mapHeight = 500;
+        var mapWidth = 100;
+        var mapHeight = 400;
         for (var x = 0; x < mapWidth; x++) {
             // Create the nested array for the y values
             map.push([]);
