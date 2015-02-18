@@ -10,7 +10,7 @@ Game.Mixins.Moveable = {
         // If an entity was present at the tile, cannot move there
         if (target) {
             // If an attacker, try to attack the target
-            if (this.haxMixin('Attacker')) {
+            if (this.hasMixin('Attacker')) {
                 this.attack(target);
                 return true;
             } else {
