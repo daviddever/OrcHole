@@ -49,7 +49,7 @@ Game.Mixins.FungusActor = {
     name: 'FungusActor',
     groupName: 'Actor',
     init: function() {
-        this._growthsRemainging = 5;
+        this._growthsRemaining = 5;
     },
     act: function() {
         // Check if the fungus can grow this turn

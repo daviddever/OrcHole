@@ -93,7 +93,7 @@ Game.Screen.playScreen = {
             // Only render the entity if they would show up on the screen
             if (entity.getX() >= topLeftX && entity.getY() >= topLeftY &&
                 entity.getX() < topLeftX + screenWidth &&
-                entity.getY() < topLeftX + screenHeight){
+                entity.getY() < topLeftY + screenHeight){
                     display.draw(
                         entity.getX() - topLeftX,
                         entity.getY() - topLeftY,
