@@ -42,8 +42,44 @@ Game.Mixins.PlayerActor = {
         // Lock the engine and wait asynchronously for the player
         // to press a key
         this.getMap().getEngine().lock();
+        // Clear the message queue
+        this.clearMessages();
     }
 }
+
+Game.Mixins.MessageRecipient = {
+    name: 'MessageRecipient',
+    init: function(template) {
+        this._messages = [];
+    },
+    receiveMessage: function(message) {
+        this._messages.push(message);
+    },
+    getMessages: function() {
+        return this._messages;
+    },
+    clearMessages: function() {
+        this._messages = [];
+    }
+}
+
+Game.sendMessageNearby = function(map, centerX, centerY, message, args) {
+    // If args were passed, then format the message, else
+    // no formatting is neccesary
+    if (args) {
+        message = vsprintf(message, args);
+    }
+    // Get the nearby entities
+    entities = map.getEntitiesWithinRadius(centerX, centerY, 5);
+    // Iterate through the nearby entities, sending the message if
+    // they can recieve it
+    for (var i = 0; i < entities.length; i++) {
+        if (entities[i].hasMixin(Game.Mixins.MessageRecipient)) {
+            entities[i].receiveMessage(message);
+        }
+    }
+}
+
 
 Game.Mixins.FungusActor = {
     name: 'FungusActor',
@@ -71,6 +107,11 @@ Game.Mixins.FungusActor = {
                         entity.setY(this.getY() + yOffset);
                         this.getMap().addEntity(entity);
                         this._growthsRemaining--;
+
+                        // Send a message nearby
+                        Game.sendMessageNearby(this.getMap(),
+                                entity.getX(), entity.getY(),
+                                'The fungus is spreading!');
                     }
                 }
             }
@@ -95,11 +136,17 @@ Game.Mixins.Attacker = {
             var attack = this.getAttackValue();
             var defense = target.getDefenseValue();
             var max = Math.max(0, attack - defense);
-            target.takeDamage(this, 1 + Math.floor(Math.random() * max));
+            var damage = 1 + Math.floor(Math.random() * max);
+
+            Game.sendMessage(this, 'You strike the %s for %d damage!',
+                    [target.getName(), damage]);
+            Game.sendMessage(target, 'The %s strikes you for %d damage!',
+                    [this.getName(), damage]);
+
+            target.takeDamage(this, damage);
         }
     }
 }
-
 
 Game.Mixins.Destructible = {
     name: 'Destructible',
@@ -124,8 +171,22 @@ Game.Mixins.Destructible = {
         this._hp -= damage;
         // If 0 or less HP, then remove from map
         if (this._hp <= 0) {
+            Game.sendMessage(attacker, 'You kill the %s!', [this.getName()]);
+            Game.sendMessage(this, 'You die!');
             this.getMap().removeEntity(this);
         }
+    }
+}
+
+Game.sendMessage = function(recipient, message, args) {
+    // Make sure the recipient can recieve the message before doing anything
+    if (recipient.hasMixin(Game.Mixins.MessageRecipient)) {
+        // If args were passed, then format the message
+        // else no is neccesary
+        if (args) {
+            message = vsprintf(message, args);
+        }
+        recipient.receiveMessage(message);
     }
 }
 
@@ -137,11 +198,13 @@ Game.PlayerTemplate = {
     maxHp: 40,
     attackValue: 10,
     mixins: [Game.Mixins.Moveable, Game.Mixins.PlayerActor,
-             Game.Mixins.Attacker, Game.Mixins.Destructible]
+             Game.Mixins.Attacker, Game.Mixins.Destructible,
+             Game.Mixins.MessageRecipient]
 }
 
 // Fungus template
 Game.FungusTemplate = {
+    name: 'fungus',
     character: 'F',
     foreground: 'green',
     maxHp: 10,
