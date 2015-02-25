@@ -4,11 +4,28 @@ Game.Mixins = {};
 // Define Moveable mixin
 Game.Mixins.Moveable = {
     name: 'Moveable',
-    tryMove: function(x, y, map) {
-        var tile = map.getTile(x, y);
-        var target = map.getEntityAt(x, y);
+    tryMove: function(x, y, z, map) {
+        var map = this._getMap();
+        // Must use starting z
+        var tile = map.getTile(x, y, this.getZ());
+        var target = map.getEntityAt(x, y, this.getZ());
+        // If our z level has changed, check if player is on stair
+        if (z < this.getZ()) {
+            if (tile != Game.Tile.stairsUpTile) {
+                Game.sendMessage(this, "You can't go up here!");
+            } else {
+                Game.sendMessage(this, "You ascend to level $d", [z + 1]);
+                this.setPosition(x, y, z);
+            }
+        } else if (z > this.getZ()) {
+            if (tile != Game.Tile.stairsDown) {
+                Game.sendMessage(this, "You can't go down here!");
+            } else {
+                this.setPosition(x, y, z);
+                Game.sendMessage(this, "You descend to level %d!", [z + 1]);
+            }
         // If an entity was present at the tile, cannot move there
-        if (target) {
+        } else if (target) {
             // If an attacker, try to attack the target
             if (this.hasMixin('Attacker')) {
                 this.attack(target);
@@ -20,12 +37,11 @@ Game.Mixins.Moveable = {
         // Check if we can walk on the tile and if so walk on it
         } else if (tile.isWalkable()) {
             // Update the enitity's position
-            this._x = x;
-            this._y = y;
+            setPosition(x, y, z);
             return true;
         // Check if the tile is diggable, and if so try to dig out
         } else if (tile.isDiggable()) {
-            map.dig(x, y);
+            map.dig(x, y, z);
             return true;
         }
         return false;
@@ -70,7 +86,7 @@ Game.sendMessageNearby = function(map, centerX, centerY, message, args) {
         message = vsprintf(message, args);
     }
     // Get the nearby entities
-    entities = map.getEntitiesWithinRadius(centerX, centerY, 5);
+    entities = map.getEntitiesWithinRadius(centerX, centerY, centerZ, 5);
     // Iterate through the nearby entities, sending the message if
     // they can recieve it
     for (var i = 0; i < entities.length; i++) {
@@ -101,16 +117,17 @@ Game.Mixins.FungusActor = {
                     // Check if fuguns can actually spawn at thelocation
                     // and if so, grow
                     if (this.getMap().isEmptyFloor(this.getX() + xOffset,
-                                                   this.getY() + yOffset)) {
+                                                   this.getY() + yOffset,
+                                                   this.getZ())) {
                         var entity = new Game.Entity(Game.FungusTemplate);
-                        entity.setX(this.getX() + xOffset);
+                        entity.setPosition(this.getX() + xOffset,
+                            this.getY() + yOffset, this.getZ());
                         entity.setY(this.getY() + yOffset);
                         this.getMap().addEntity(entity);
                         this._growthsRemaining--;
-
                         // Send a message nearby
                         Game.sendMessageNearby(this.getMap(),
-                                entity.getX(), entity.getY(),
+                                entity.getX(), entity.getY(), entity.getZ(),
                                 'The fungus is spreading!');
                     }
                 }
