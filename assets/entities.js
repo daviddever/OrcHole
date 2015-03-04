@@ -5,7 +5,7 @@ Game.Mixins = {};
 Game.Mixins.Moveable = {
     name: 'Moveable',
     tryMove: function(x, y, z, map) {
-        var map = this._getMap();
+        var map = this.getMap();
         // Must use starting z
         var tile = map.getTile(x, y, this.getZ());
         var target = map.getEntityAt(x, y, this.getZ());
@@ -37,7 +37,7 @@ Game.Mixins.Moveable = {
         // Check if we can walk on the tile and if so walk on it
         } else if (tile.isWalkable()) {
             // Update the enitity's position
-            setPosition(x, y, z);
+            this.setPosition(x, y, z);
             return true;
         // Check if the tile is diggable, and if so try to dig out
         } else if (tile.isDiggable()) {

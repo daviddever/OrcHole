@@ -36,7 +36,7 @@ Game.Map.prototype.getTile = function(x, y, z) {
         z < 0 || z >= this._depth) {
         return Game.Tile.nullTile;
     } else {
-        return this._tiles[x][y][z] || Game.Tile.nullTile;
+        return this._tiles[z][x][y] || Game.Tile.nullTile;
     }
 };
 

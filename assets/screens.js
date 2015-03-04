@@ -31,6 +31,7 @@ Game.Screen.playScreen = {
         //Create map from the tiles and player
         var tiles = new Game.Builder(width, height, depth).getTiles();
         this._player = new Game.Entity(Game.PlayerTemplate);
+        this._map = new Game.Map(tiles, this._player);
         // this._map = new Game.Map(map, this._player);
         // Start the map's engine
         this._map.getEngine().start();
@@ -134,7 +135,7 @@ Game.Screen.playScreen = {
             }
         }
     },
-    move: function(dX, dY) {
+    move: function(dX, dY, dZ) {
         var newX = this._player.getX() + dX;
         var newY = this._player.getY() + dY;
         var newZ = this._player.getZ() + dZ;
