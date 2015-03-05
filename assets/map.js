@@ -1,7 +1,7 @@
 Game.Map = function(tiles, player) {
     this._tiles = tiles;
     // cache the width and height based on the length of the dimensions of the titles array
-    this._depth = tiles.legnth;
+    this._depth = tiles.length;
     this._width = tiles[0].length;
     this._height = tiles[0][0].length;
     // Create a list which will hold the entities

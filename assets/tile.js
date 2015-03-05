@@ -18,7 +18,7 @@ Game.Tile.prototype.isDiggable = function() {
     return this._isDiggable;
 }
 
-Game.Tile.nullTile = new Game.Tile({})
+Game.Tile.nullTile = new Game.Tile({});
 Game.Tile.floorTile = new Game.Tile({
     character: '.',
     isWalkable: true
@@ -33,7 +33,7 @@ Game.Tile.stairsUpTile = new Game.Tile({
     foreground: 'white',
     isWalkable: true
 });
-Game.stairsDownTile = new Game.Tile({
+Game.Tile.stairsDownTile = new Game.Tile({
     character: '>',
     foreground: 'white',
     isWalkable: true

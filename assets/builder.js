@@ -125,13 +125,15 @@ Game.Builder.prototype._setupRegions = function(z) {
     // can be used as the starting point for a flood fill
     for (var x = 0; x < this._width; x++) {
         for (var y = 0; y < this._height; y++) {
-            // Try to fill
-            tilseFilled = this._fillRegion(region, x, y, z);
-            // If it was too small, remove it
-            if (tilesFilled <= 20) {
-                this._removeRegion(region, z);
-            } else {
-                region++;
+            if (this._canFillRegion(x, y, z)) {
+                // Try to fill
+                tilseFilled = this._fillRegion(region, x, y, z);
+                // If it was too small, remove it
+                if (tilesFilled <= 20) {
+                    this._removeRegion(region, z);
+                } else {
+                    region++;
+                }
             }
         }
     }
@@ -147,7 +149,7 @@ Game.Builder.prototype._findRegionOverlaps = function(z, r1, r2) {
     for (var x = 0; x < this._width; x++) {
         for (var y = 0; y < this._height; y++) {
             if (this._tiles[z][x][y] == Game.Tile.floorTile &&
-                this._tiles[z+1][x][y] == Game.Tile.floorTIle &&
+                this._tiles[z+1][x][y] == Game.Tile.floorTile &&
                 this._regions[z][x][y] == r1 &&
                 this._regions[z+1][x][y] == r2) {
                     matches.push({x: x, y: y});
@@ -186,7 +188,7 @@ Game.Builder.prototype._connectAllRegions = function() {
             for (var y = 0; y < this._height; y++) {
                 key = this._regions[z][x][y] + ',' +
                       this._regions[z+1][x][y];
-                if (this._tiles[z][x][y] == Game.Tile.FloorTile &&
+                if (this._tiles[z][x][y] == Game.Tile.floorTile &&
                     this._tiles[z+1][x][y] == Game.Tile.floorTile &&
                     !connected[key]) {
                         // Since both tiles are floors and the regions aren't

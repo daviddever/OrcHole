@@ -79,7 +79,7 @@ Game.Mixins.MessageRecipient = {
     }
 }
 
-Game.sendMessageNearby = function(map, centerX, centerY, message, args) {
+Game.sendMessageNearby = function(map, centerX, centerY, centerZ, message, args) {
     // If args were passed, then format the message, else
     // no formatting is neccesary
     if (args) {

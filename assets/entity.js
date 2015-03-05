@@ -61,7 +61,7 @@ Game.Entity.prototype.setY = function(y) {
     this._y = y;
 }
 Game.Entity.prototype.setZ = function(z) {
-    return this._z;
+    this._z;
 }
 
 Game.Entity.prototype.setMap = function(map) {
